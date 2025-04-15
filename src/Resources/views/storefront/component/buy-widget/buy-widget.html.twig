@@ -1,0 +1,28 @@
+{% sw_extends "@Storefront/storefront/component/buy-widget/buy-widget.html.twig" %}
+
+{% block buy_widget_price %}
+	<div class="product-detail-price-container">
+
+		{% set discount = page.extensions.customerDiscount.getDiscount() %}
+		{% if discount > 0 %}
+			{% set originalPrice = page.product.calculatedPrice.unitPrice %}
+			{% set discountedPrice = originalPrice * (1 - discount / 100) %}
+			<p class="product-detail-price">
+				{{ discountedPrice | currency }}
+				{% if not feature('ACCESSIBILITY_TWEAKS') %}
+					{{ 'general.star'|trans|sw_sanitize }}
+				{% endif %}
+				{% set savings = originalPrice - discountedPrice %}
+				{% set alertContent = 'You save ' ~ discount ~ '% (' ~ savings|currency ~ ')' %}
+
+				{% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
+                    type: 'success',
+                    content: alertContent,
+                    icon: false
+                } %}
+			</p>
+		{% else %}
+			{% sw_include '@Storefront/storefront/component/buy-widget/buy-widget-price.html.twig' %}
+		{% endif %}
+	</div>
+{% endblock %}
